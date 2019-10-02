@@ -8,53 +8,88 @@
 
 
 /**
- * 
+ * Struct for storage Vertex coordinate and its index in polygon
  */
-
 struct PolyVertx
 {
-	int32 vertex_index;
+	int32	vertex_index;
 	FVector vertex_coord;
 	
 	PolyVertx(int32 _i, FVector _v) : vertex_index(_i), vertex_coord(_v) {}
-	PolyVertx() : vertex_index(-1), vertex_coord(FVector(0.f, 0.f, 0.f)) {}
-	//PolyVertx(int32 _i) : vertex_index(_i), vertex_coord(FVector(0.f, 0.f, 0.f)) {}
-
+	PolyVertx() : vertex_index(0), vertex_coord(FVector(0.f, 0.f, 0.f)) {}
+	
 	friend bool operator== (const PolyVertx& a, const PolyVertx& b)
 	{
 		return a.vertex_index == b.vertex_index;
 	}
 
 };
-
+/**
+ *	Implementation Ear cutting(clipping) algorithm 
+ */
 UCLASS()
 class EARCUTTING_API UBFL_EarCutting : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
-public:
-	// return true if triangle ABC is Clockwise [WORK]
-	static bool isClockwise(FVector _A, FVector _B, FVector _C);
+private:
+	/**
+	 * True is triangle ABC is Clockwise
+	 *
+	 * @param _A	First triangle vertex
+	 * @param _B	Second triangle vertex
+	 * @param _C	Third triangle vertex
+	 * @return		Is ABC clockwise ? 
+	 */
+	static bool isClockwise(const FVector& _A, const FVector& _B, const FVector& _C);
 
-	//return true if point P is inside triangle ABC
-	UFUNCTION(BlueprintCallable, Category = "EarCutting")
-	static bool isTriangleContainPoint(FVector _A, FVector _B, FVector _C, FVector _P);
+	/**
+	 * True if point P is inside triangle ABC
+	 *
+	 * @param _A	First triangle vertex
+	 * @param _B	Second triangle vertex
+	 * @param _C	Third triangle vertex
+	 * @param _P	Point to test
+	 * @return		ABC contain point ?
+	 */
+	static bool isTriangleContainPoint(const FVector& _A, const FVector& _B, const FVector& _C, const FVector& _P);
 
-	//return true if point P is left of AB line [WORK]
-	UFUNCTION(BlueprintCallable, Category = "EarCutting")
-	static bool isLeftPoint(FVector _A, FVector _B, FVector _P);
+	/**
+	 * True if point P is left of AB line
+	 *
+	 * @param _A	First line vertex
+	 * @param _B	Second line vertex
+	 * @param _P	Point to test
+	 * @return		Is Point to the left of the line?
+	 */
+	static bool isLeftPoint(const FVector& _A, const FVector& _B, const FVector& _P);
 
-	//return true if Point B is convex (angel > 180)
-	UFUNCTION(BlueprintCallable, Category = "EarCutting")
-	static bool isConvexPoint(FVector _A, FVector _B, FVector _C);
+	/**
+	 * True if Point B is convex (angel > 180)
+	 *
+	 * @param _A	First adjacent vertex
+	 * @param _B	Vertex to test
+	 * @param _Ñ	Second adjacent vertex
+	 * @return		Is point convex ? 
+	 */
+	static bool isConvexPoint(const FVector& _A, const FVector& _B, const FVector& _C);
 	
-
+	/**
+	 * Update lists 
+	 * 
+	 * @param Poly			Map with polygon key - vertex'es index in polygon? value - vertex'es coorinate 
+	 * @param ConvexList	List with convex vertexes
+	 * @param ReflexList	List with reflex vertexess
+	 * @param Ears			List with vertexes for cutting
+	 */
 	static void UpdateConvexAndReflexList(TMap<int32, FVector>& Poly, TArray<int32>& ConvexList, TArray<int32>&  ReflexList, TArray<int32>& Ears);
-
-	static void FindEars(TMap<int32, FVector>& Poly, TArray<int32>& ConvexList, TDoubleLinkedList<int32>& Ears);
-
 public:
-	
+	/**
+	 * Return IBO (index buffer object). 
+	 * 
+	 * @param Vertexes		Polygon's vertexes (must be clockwise !!!)
+	 * @param IBO			Integer out array conains indexes
+	 */
 	UFUNCTION(BlueprintCallable, Category = "EarCutting")
-	static void test(TMap<int32, FVector>& Vertexes, TArray<int32>& IBO, UPARAM(ref) TArray<FVector>& InArray);
+	static void GetIBO(UPARAM(ref) TArray<FVector>& InVertexes, TArray<int32>& IBO);
 };

@@ -118,6 +118,7 @@ void UBFL_EarCutting::GetIBO(TArray<FVector>& InVertexes, TArray<int32>& IBO)
 
 	while (EarsVertexes.Num() != 0) 
 	{
+		UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
 		auto index = Vertexes.Find(PolyVertx(EarsVertexes[0], FVector()));
 		auto prev_index = mod(index - 1, Vertexes.Num());
 		auto next_index = mod(index + 1, Vertexes.Num());

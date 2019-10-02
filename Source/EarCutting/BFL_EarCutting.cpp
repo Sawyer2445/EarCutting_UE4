@@ -3,7 +3,7 @@
 
 #include "BFL_EarCutting.h"
 #include "EngineUtils.h"
-#include <list>
+#include <vector>
 #include <iterator>
 #include <algorithm>
 
@@ -53,54 +53,60 @@ bool UBFL_EarCutting::isConvexPoint(const FVector& _A, const FVector& _B, const 
 	return !isClockwise(_A, _B, _C);
 }
 
-void UBFL_EarCutting::UpdateConvexAndReflexList(TMap<int32, FVector>& Poly, TArray<int32>& ConvexList, TArray<int32>&  ReflexList, TArray<int32>& Ears)
+void UBFL_EarCutting::UpdateConvexAndReflexList(TArray<PolyVertx>& Poly, TArray<int32>& ConvexList, TArray<int32>&  ReflexList, TArray<int32>& Ears)
 {
 	ConvexList.Empty();
 	ReflexList.Empty();
 	Ears.Empty();
 
-	std::list<PolyVertx> vertex_list;
+	auto mod = [](int a, int b) {return (b + (a % b)) % b; };
+	
+	TArray<PolyVertx> vertex_vector;
 	for (auto& v : Poly)
 	{
-		vertex_list.push_back(PolyVertx(v.Key, v.Value));
+		vertex_vector.Add(v);
 	}
 
-	for (auto i = vertex_list.begin(); i != vertex_list.end(); i++)
+	for (auto i = 0; i != vertex_vector.Num(); i++)
 	{
-		if (isConvexPoint(std::prev(i, 1)->vertex_coord, i->vertex_coord, std::next(i, 1)->vertex_coord))
+		int prev_index = mod(i - 1, vertex_vector.Num());
+		int index = i;
+		int next_index = mod(index + 1, vertex_vector.Num());
+		if (isConvexPoint(vertex_vector[prev_index].vertex_coord, vertex_vector[index].vertex_coord, vertex_vector[next_index].vertex_coord))
 		{
-			ConvexList.Add(i->vertex_index);
-			FVector _A = std::prev(i, 1)->vertex_coord;
-			FVector _B = i->vertex_coord;
-			FVector _C = std::next(i, 1)->vertex_coord;
+			ConvexList.Add(vertex_vector[index].vertex_index);
+			FVector _A = vertex_vector[prev_index].vertex_coord;
+			FVector _B = vertex_vector[index].vertex_coord;
+			FVector _C = vertex_vector[next_index].vertex_coord;
 			int32 check_counter = 0;
 			for (auto& p : Poly)
 			{
-				if (!isTriangleContainPoint(_A, _B, _C, p.Value))
+				if (!isTriangleContainPoint(_A, _B, _C, p.vertex_coord))
 				{
 					check_counter++;
 				}
 			}
 			if (check_counter == (Poly.Num() - 3))
 			{
-				Ears.Add(i->vertex_index);
+				Ears.Add(vertex_vector[index].vertex_index);
 			}
 		}
 		else
 		{
-			ReflexList.Add(i->vertex_index);
+			ReflexList.Add(vertex_vector[index].vertex_index);
 		}
 	}
 }
 
 void UBFL_EarCutting::GetIBO(TArray<FVector>& InVertexes, TArray<int32>& IBO)
 {	
+	auto mod = [](int a, int b) {return (b + (a % b)) % b; };
 	IBO.Empty(); 
-	TMap<int32, FVector> Vertexes;
+	TArray<PolyVertx> Vertexes;
 
 	for (int32 i = 0; i < InVertexes.Num(); i++)
 	{
-		Vertexes.Add(i, InVertexes[i]);
+		Vertexes.Add(PolyVertx(i, InVertexes[i]));
 	}
 
 	TArray<int32> ConvexVertexes;
@@ -112,48 +118,28 @@ void UBFL_EarCutting::GetIBO(TArray<FVector>& InVertexes, TArray<int32>& IBO)
 
 	UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
 	
-	
-	std::list<PolyVertx> vertex_list;	//using std::list for STL functions
-	for (auto& v : Vertexes)			//filling list
-	{
-		vertex_list.push_back(PolyVertx(v.Key, v.Value));
-	}
 
 	while (EarsVertexes.Num() != 0) 
 	{
 		UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
-		auto it = std::find(vertex_list.begin(), vertex_list.end(), PolyVertx(EarsVertexes[0], FVector()));
-		auto prev_it = std::prev(it, 1);	//неверное значение. проверить работу 
-		auto next_it = std::next(it, 1);
+		//auto it = std::find(vertex_list.begin(), vertex_list.end(), PolyVertx(EarsVertexes[0], FVector()));
+		auto index = Vertexes.Find(PolyVertx(EarsVertexes[0], FVector()));
+		auto prev_index = mod(index - 1, Vertexes.Num());
+		auto next_index = mod(index + 1, Vertexes.Num());
 			
-		_IBO_temp.Add(prev_it->vertex_index);
-		_IBO_temp.Add(it->vertex_index);
-		_IBO_temp.Add(next_it->vertex_index);
+		_IBO_temp.Add(Vertexes[prev_index].vertex_index);
+		_IBO_temp.Add(Vertexes[index].vertex_index);
+		_IBO_temp.Add(Vertexes[next_index].vertex_index);
 
-		vertex_list.remove(*it);
-		//vertex_list.remove(PolyVertx(it->vertex_index, it->vertex_coord));
-		Vertexes.Remove(it->vertex_index);
+		Vertexes.RemoveAt(index);
 
 		UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
-	
 	}
-	TArray<int32> values;
-	Vertexes.GetKeys(values);
-
-	//_IBO_temp.Add(values[0]);
-	//_IBO_temp.Add(values[1]);
-	//_IBO_temp.Add(values[2]);
-	//values.Empty();
-	//clearing resources
 	ConvexVertexes.Empty();
 	ReflexVertexes.Empty();
 	EarsVertexes.Empty();
 
-	IBO.Empty();
-	for (auto& i : _IBO_temp)
-	{
-		IBO.Add(i);
-	}
+	IBO = _IBO_temp;
 	//return array
 	_IBO_temp.Empty();
 }

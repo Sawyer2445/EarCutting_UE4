@@ -82,7 +82,7 @@ private:
 	 * @param ReflexList	List with reflex vertexess
 	 * @param Ears			List with vertexes for cutting
 	 */
-	static void UpdateConvexAndReflexList(TMap<int32, FVector>& Poly, TArray<int32>& ConvexList, TArray<int32>&  ReflexList, TArray<int32>& Ears);
+	static void UpdateConvexAndReflexList(TArray<PolyVertx>& Poly, TArray<int32>& ConvexList, TArray<int32>&  ReflexList, TArray<int32>& Ears);
 public:
 	/**
 	 * Return IBO (index buffer object). 

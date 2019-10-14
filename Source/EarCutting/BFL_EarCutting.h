@@ -91,5 +91,5 @@ public:
 	 * @param IBO			Integer out array conains indexes
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EarCutting")
-	static void GetIBO(UPARAM(ref) TArray<FVector>& InVertexes, TArray<int32>& IBO);
+	static void GenerateIndexBufferObject(UPARAM(ref) TArray<FVector>& InVertexes, TArray<int32>& IBO);
 };

@@ -3,14 +3,20 @@
 	"EngineAssociation": "4.22",
 	"Category": "",
 	"Description": "",
-	"Modules": [
-		{
-			"Name": "EarCutting",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
-		}
-	]
+  "Modules": [
+    {
+      "Name": "EarCutting",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "AdditionalDependencies": [
+        "Engine"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "ProceduralMeshComponent",
+      "Enabled" :  true
+    }
+  ]
 }

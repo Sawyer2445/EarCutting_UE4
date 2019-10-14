@@ -27,6 +27,7 @@ bool UBFL_EarCutting::isTriangleContainPoint(const FVector& _A, const FVector& _
 		_PisLeft_BA = isLeftPoint(_B, _A, _P);
 		_PisLeft_CB = isLeftPoint(_C, _B, _P);
 		_PisLeft_CA = isLeftPoint(_A, _C, _P);
+	
 		_return = (_PisLeft_BA && _PisLeft_CB && _PisLeft_CA);
 	}
 	else
@@ -34,6 +35,7 @@ bool UBFL_EarCutting::isTriangleContainPoint(const FVector& _A, const FVector& _
 		_PisLeft_BA = isLeftPoint(_A, _B, _P);
 		_PisLeft_CB = isLeftPoint(_B, _C, _P);
 		_PisLeft_CA = isLeftPoint(_C, _A, _P);
+		
 		_return = (_PisLeft_BA && _PisLeft_CB && _PisLeft_CA);
 	}
 	return _return;
@@ -95,10 +97,12 @@ void UBFL_EarCutting::UpdateConvexAndReflexList(TArray<PolyVertx>& Poly, TArray<
 	}
 }
 
-void UBFL_EarCutting::GetIBO(TArray<FVector>& InVertexes, TArray<int32>& IBO)
+void UBFL_EarCutting::GenerateIndexBufferObject(TArray<FVector>& InVertexes, TArray<int32>& IBO)
 {	
 	IBO.Empty();
+	
 	auto mod = [](int a, int b) {return (b + (a % b)) % b; };
+	
 	TArray<PolyVertx> Vertexes;
 
 	for (int32 i = 0; i < InVertexes.Num(); i++)

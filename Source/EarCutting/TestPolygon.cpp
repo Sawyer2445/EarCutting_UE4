@@ -12,7 +12,7 @@ ATestPolygon::ATestPolygon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	UBFL_EarCutting::GenerateIndexBufferObject(VBO, IBO);
+	
 
 	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Polygon"));
 	ProceduralMesh->SetupAttachment(RootComponent);
@@ -23,7 +23,11 @@ ATestPolygon::ATestPolygon()
 void ATestPolygon::CretePolygone()
 {
 	UBFL_EarCutting::GenerateIndexBufferObject(VBO, IBO);
-	ProceduralMesh->CreateMeshSection(0, VBO, IBO, TArray<FVector>(), TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+	for (auto i = 0; i != VBO.Num(); i++)
+	{
+		VertexColors.Add(FColor(0, 255, 0));
+	}
+	ProceduralMesh->CreateMeshSection(1, VBO, IBO, TArray<FVector>(), TArray<FVector2D>(),VertexColors , TArray<FProcMeshTangent>(), true);
 }
 
 void ATestPolygon::PostActorCreated()

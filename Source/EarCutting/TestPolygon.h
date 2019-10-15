@@ -24,6 +24,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vars")
 	TArray<int32> IBO;
 
+	/** Array of vertex' color */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vars")
+	TArray<FColor> VertexColors;
+	
 	/** Polygon */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Components")
 	class UProceduralMeshComponent* ProceduralMesh;

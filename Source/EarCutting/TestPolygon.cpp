@@ -3,8 +3,7 @@
 
 #include "TestPolygon.h"
 #include "ProceduralMeshComponent.h"
-#include "BFL_EarCutting.h"
-
+#include "PolygonTriangulationBPLibrary.h"
 
 // Sets default values
 ATestPolygon::ATestPolygon()
@@ -22,7 +21,7 @@ ATestPolygon::ATestPolygon()
 
 void ATestPolygon::CretePolygone()
 {
-	UBFL_EarCutting::GenerateIndexBufferObject(VBO, IBO);
+	UPolygonTriangulationBPLibrary::GenerateIndexBufferObject(VBO, IBO);
 	for (auto i = 0; i != VBO.Num(); i++)
 	{
 		VertexColors.Add(FColor(0, 255, 0));

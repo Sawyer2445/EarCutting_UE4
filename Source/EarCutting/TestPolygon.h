@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "TestPolygon.generated.h"
 
+
 UCLASS()
 class EARCUTTING_API ATestPolygon : public AActor
 {

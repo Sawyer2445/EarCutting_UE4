@@ -3,20 +3,24 @@
 	"EngineAssociation": "4.22",
 	"Category": "",
 	"Description": "",
-  "Modules": [
-    {
-      "Name": "EarCutting",
-      "Type": "Runtime",
-      "LoadingPhase": "Default",
-      "AdditionalDependencies": [
-        "Engine"
-      ]
-    }
-  ],
-  "Plugins": [
-    {
-      "Name": "ProceduralMeshComponent",
-      "Enabled" :  true
-    }
-  ]
+	"Modules": [
+		{
+			"Name": "EarCutting",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ProceduralMeshComponent",
+			"Enabled": true
+		},
+		{
+			"Name": "PolygonTriangulation",
+			"Enabled": true
+		}
+	]
 }

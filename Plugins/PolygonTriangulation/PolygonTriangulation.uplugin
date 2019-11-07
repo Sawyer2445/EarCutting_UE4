@@ -1,0 +1,27 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "PolygonTriangulation",
+	"Description": "This plugin give you function to create triangles to your polygon procedural mesh",
+	"Category": "Other",
+	"CreatedBy": "Kirill Zayarin",
+	"CreatedByURL": "https://github.com/Sawyer2445",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"Installed": false,
+	"Modules": [
+    {
+      "Name": "PolygonTriangulation",
+      "Type": "Runtime",
+      "LoadingPhase": "PreLoadingScreen",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64"
+      ]
+    }
+	]
+}

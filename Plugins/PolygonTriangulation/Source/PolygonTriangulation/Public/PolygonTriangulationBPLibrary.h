@@ -87,8 +87,8 @@ public:
 	 * Return IBO (index buffer object).
 	 *
 	 * @param Vertexes		Polygon's vertexes (must be clockwise !!!)
-	 * @param IBO			Integer out array conains indexes
+	 * @param IBO			Integer out array contains indexes  
 	 */
-	UFUNCTION(BlueprintCallable, meta = (CompactNodeTitle = "EarCutting"), Category = "EarCutting")
-	static void GenerateIndexBufferObject(UPARAM(ref) TArray<FVector>& InVertexes, TArray<int32>& IBO);
+	UFUNCTION(BlueprintCallable, Category = "EarCutting")
+	static void GenerateTringles(UPARAM(ref, DisplayName = "VBO") TArray<FVector>& InVertexes, bool bTwosides, TArray<int32>& IBO);
 };

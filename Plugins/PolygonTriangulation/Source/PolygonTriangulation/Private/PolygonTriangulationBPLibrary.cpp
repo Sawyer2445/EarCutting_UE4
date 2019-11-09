@@ -102,7 +102,7 @@ void UPolygonTriangulationBPLibrary::UpdateConvexAndReflexList(TArray<PolyVertx>
 	}
 }
 
-void UPolygonTriangulationBPLibrary::GenerateIndexBufferObject(TArray<FVector>& InVertexes, TArray<int32>& IBO)
+void UPolygonTriangulationBPLibrary::GenerateTringles(TArray<FVector>& InVertexes, bool bTwosides, TArray<int32>& IBO)
 {
 	IBO.Empty();
 
@@ -135,6 +135,14 @@ void UPolygonTriangulationBPLibrary::GenerateIndexBufferObject(TArray<FVector>& 
 		_IBO_temp.Add(Vertexes[index].vertex_index);
 		_IBO_temp.Add(Vertexes[next_index].vertex_index);
 
+		// add additional triangles
+		if (bTwosides)
+		{
+			_IBO_temp.Add(Vertexes[next_index].vertex_index);
+			_IBO_temp.Add(Vertexes[index].vertex_index);
+			_IBO_temp.Add(Vertexes[prev_index].vertex_index);
+		}
+
 		Vertexes.RemoveAt(index);
 
 		UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
@@ -142,6 +150,7 @@ void UPolygonTriangulationBPLibrary::GenerateIndexBufferObject(TArray<FVector>& 
 	ConvexVertexes.Empty();
 	ReflexVertexes.Empty();
 	EarsVertexes.Empty();
+
 
 	IBO = _IBO_temp;
 	_IBO_temp.Empty();

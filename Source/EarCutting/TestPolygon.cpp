@@ -21,7 +21,7 @@ ATestPolygon::ATestPolygon()
 
 void ATestPolygon::CretePolygone()
 {
-	UPolygonTriangulationBPLibrary::GenerateIndexBufferObject(VBO, IBO);
+	UPolygonTriangulationBPLibrary::GenerateTringles(VBO, false, IBO);
 	for (auto i = 0; i != VBO.Num(); i++)
 	{
 		VertexColors.Add(FColor(0, 255, 0));

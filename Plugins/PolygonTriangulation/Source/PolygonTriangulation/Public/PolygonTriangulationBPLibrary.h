@@ -33,7 +33,7 @@ class POLYGONTRIANGULATION_API UPolygonTriangulationBPLibrary : public UBlueprin
 
 private:
 	/**
-	 * True is triangle ABC is Clockwise
+	 * True is triangle ABC is clockwise
 	 *
 	 * @param _A	First triangle vertex
 	 * @param _B	Second triangle vertex
@@ -74,21 +74,22 @@ private:
 	static bool isConvexPoint(const FVector& _A, const FVector& _B, const FVector& _C);
 
 	/**
-	 * Update lists
+	 * Update arrays with  convex, reflex and ear vertices
 	 *
-	 * @param Poly			Map with polygon key - vertex'es index in polygon? value - vertex'es coorinate
-	 * @param ConvexList	List with convex vertexes
-	 * @param ReflexList	List with reflex vertexess
-	 * @param Ears			List with vertexes for cutting
+	 * @param Polygon		Array of tuple  with polygon key - vertex index in polygon value - vertex coordinate
+	 * @param ConvexList	Array with convex vertexes
+	 * @param ReflexList	Array with reflex vertexes
+	 * @param Ears			Array with vertexes for cutting
 	 */
-	static void UpdateConvexAndReflexList(TArray<PolyVertx>& Poly, TArray<int32>& ConvexList, TArray<int32>&  ReflexList, TArray<int32>& Ears);
+	static void UpdateConvexAndReflexList(TArray<PolyVertx>& Polygon, TArray<int32>& Convex, TArray<int32>&  Reflex, TArray<int32>& Ears);
 public:
 	/**
 	 * Return IBO (index buffer object).
 	 *
 	 * @param Vertexes		Polygon's vertexes (must be clockwise !!!)
-	 * @param IBO			Integer out array contains indexes  
+	 * @param IBO			Integer out array contains indexes 
+	 * @param bTwosides		Create double sided triangles for  polygon
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EarCutting")
-	static void GenerateTringles(UPARAM(ref, DisplayName = "VBO") TArray<FVector>& InVertexes, bool bTwosides, TArray<int32>& IBO);
+	static void GenerateTringles(UPARAM(ref, DisplayName = "Vertices") TArray<FVector>& InVertices, bool  bDoubleSided, TArray<int32>& Triangles);
 };

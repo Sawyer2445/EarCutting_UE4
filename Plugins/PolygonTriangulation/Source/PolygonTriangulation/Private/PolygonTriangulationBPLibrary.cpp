@@ -57,10 +57,10 @@ bool UPolygonTriangulationBPLibrary::isConvexPoint(const FVector& _A, const FVec
 	return !isClockwise(_A, _B, _C);
 }
 
-void UPolygonTriangulationBPLibrary::UpdateConvexAndReflexList(TArray<PolyVertx>& Poly, TArray<int32>& ConvexList, TArray<int32>& ReflexList, TArray<int32>& Ears)
+void UPolygonTriangulationBPLibrary::UpdateConvexAndReflexList(TArray<PolyVertx>& Poly, TArray<int32>& Convex, TArray<int32>& Reflex, TArray<int32>& Ears)
 {
-	ConvexList.Empty();
-	ReflexList.Empty();
+	Convex.Empty();
+	Reflex.Empty();
 	Ears.Empty();
 
 	auto mod = [](int a, int b) {return (b + (a % b)) % b; };
@@ -78,7 +78,7 @@ void UPolygonTriangulationBPLibrary::UpdateConvexAndReflexList(TArray<PolyVertx>
 		int next_index = mod(index + 1, vertex_vector.Num());
 		if (isConvexPoint(vertex_vector[prev_index].vertex_coord, vertex_vector[index].vertex_coord, vertex_vector[next_index].vertex_coord))
 		{
-			ConvexList.Add(vertex_vector[index].vertex_index);
+			Convex.Add(vertex_vector[index].vertex_index);
 			FVector _A = vertex_vector[prev_index].vertex_coord;
 			FVector _B = vertex_vector[index].vertex_coord;
 			FVector _C = vertex_vector[next_index].vertex_coord;
@@ -97,62 +97,58 @@ void UPolygonTriangulationBPLibrary::UpdateConvexAndReflexList(TArray<PolyVertx>
 		}
 		else
 		{
-			ReflexList.Add(vertex_vector[index].vertex_index);
+			Reflex.Add(vertex_vector[index].vertex_index);
 		}
 	}
 }
 
-void UPolygonTriangulationBPLibrary::GenerateTringles(TArray<FVector>& InVertexes, bool bTwosides, TArray<int32>& IBO)
+void UPolygonTriangulationBPLibrary::GenerateTringles(TArray<FVector>& InVertices, bool bDoubleSided, TArray<int32>& Triangles)
 {
-	IBO.Empty();
-
 	auto mod = [](int a, int b) {return (b + (a % b)) % b; };
 
-	TArray<PolyVertx> Vertexes;
+	TArray<PolyVertx> TempVertices;
 
-	for (int32 i = 0; i < InVertexes.Num(); i++)
+	for (int32 i = 0; i < InVertices.Num(); i++)
 	{
-		Vertexes.Add(PolyVertx(i, InVertexes[i]));
+		TempVertices.Add(PolyVertx(i, InVertices[i]));
 	}
 
-	TArray<int32> ConvexVertexes;
-	TArray<int32> ReflexVertexes;
-	TArray<int32> EarsVertexes;		//vertexes for cutting
-	TArray<int32> _IBO_temp;		//temp IBO array
-	_IBO_temp.Empty();
+	TArray<int32> ConvexVertices;
+	TArray<int32> ReflexVertices;
+	TArray<int32> EarsVertices;			//vertexes for cutting
+	TArray<int32> TempTriangles;		
+
+	UpdateConvexAndReflexList(TempVertices, ConvexVertices, ReflexVertices, EarsVertices);
 
 
-	UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
-
-
-	while (EarsVertexes.Num() != 0)
+	while (EarsVertices.Num() != 0)
 	{
-		auto index = Vertexes.Find(PolyVertx(EarsVertexes[0], FVector()));
-		auto prev_index = mod(index - 1, Vertexes.Num());
-		auto next_index = mod(index + 1, Vertexes.Num());
+		auto index = TempVertices.Find(PolyVertx(EarsVertices[0], FVector()));
+		auto prev_index = mod(index - 1, TempVertices.Num());
+		auto next_index = mod(index + 1, TempVertices.Num());
 
-		_IBO_temp.Add(Vertexes[prev_index].vertex_index);
-		_IBO_temp.Add(Vertexes[index].vertex_index);
-		_IBO_temp.Add(Vertexes[next_index].vertex_index);
+		TempTriangles.Add(TempVertices[prev_index].vertex_index);
+		TempTriangles.Add(TempVertices[index].vertex_index);
+		TempTriangles.Add(TempVertices[next_index].vertex_index);
 
 		// add additional triangles
-		if (bTwosides)
+		if (bDoubleSided)
 		{
-			_IBO_temp.Add(Vertexes[next_index].vertex_index);
-			_IBO_temp.Add(Vertexes[index].vertex_index);
-			_IBO_temp.Add(Vertexes[prev_index].vertex_index);
+			TempTriangles.Add(TempVertices[next_index].vertex_index);
+			TempTriangles.Add(TempVertices[index].vertex_index);
+			TempTriangles.Add(TempVertices[prev_index].vertex_index);
 		}
 
-		Vertexes.RemoveAt(index);
+		TempVertices.RemoveAt(index);
 
-		UpdateConvexAndReflexList(Vertexes, ConvexVertexes, ReflexVertexes, EarsVertexes);
+		UpdateConvexAndReflexList(TempVertices, ConvexVertices, ReflexVertices, EarsVertices);
 	}
-	ConvexVertexes.Empty();
-	ReflexVertexes.Empty();
-	EarsVertexes.Empty();
+	//ConvexVertices.Empty();
+	//ReflexVertices.Empty();
+	//EarsVertices.Empty();
 
 
-	IBO = _IBO_temp;
-	_IBO_temp.Empty();
+	Triangles = TempTriangles;
+	//TempTriangles.Empty();
 }
 

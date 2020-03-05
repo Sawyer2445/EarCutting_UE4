@@ -143,12 +143,31 @@ void UPolygonTriangulationBPLibrary::GenerateTringles(TArray<FVector>& InVertice
 
 		UpdateConvexAndReflexList(TempVertices, ConvexVertices, ReflexVertices, EarsVertices);
 	}
-	//ConvexVertices.Empty();
-	//ReflexVertices.Empty();
-	//EarsVertices.Empty();
+	ConvexVertices.Empty();
+	ReflexVertices.Empty();
+	EarsVertices.Empty();
 
 
 	Triangles = TempTriangles;
-	//TempTriangles.Empty();
+	TempTriangles.Empty();
+}
+
+void UPolygonTriangulationBPLibrary::ReverseVertices(TArray<FVector>& Vertices, TArray<FVector>& ReversedVertices)
+{
+	TArray<FVector> Result;
+	Result = Vertices;
+	int32 StartIndex = 0;
+	int32 EndIndex = Vertices.Num() - 1;
+
+	while (StartIndex < EndIndex)
+	{
+		FVector temp = Result[StartIndex];
+		Result[StartIndex] = Result[EndIndex];
+		Result[EndIndex] = temp;
+		StartIndex++;
+		EndIndex--;
+	}
+	ReversedVertices = Result;
+	Result.Empty();
 }
 

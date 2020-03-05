@@ -84,12 +84,22 @@ private:
 	static void UpdateConvexAndReflexList(TArray<PolyVertx>& Polygon, TArray<int32>& Convex, TArray<int32>&  Reflex, TArray<int32>& Ears);
 public:
 	/**
-	 * Return IBO (index buffer object).
+	 * Return triangles (index buffer object).
 	 *
-	 * @param Vertexes		Polygon's vertexes (must be clockwise !!!)
+	 * @param Vertices		Polygon's vertexes (must be counter-clockwise !!!)
 	 * @param IBO			Integer out array contains indexes 
 	 * @param bTwosides		Create double sided triangles for  polygon
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EarCutting")
 	static void GenerateTringles(UPARAM(ref, DisplayName = "Vertices") TArray<FVector>& InVertices, bool  bDoubleSided, TArray<int32>& Triangles);
+
+	/**
+	 * Reverse vector array
+	 *
+	 * @param Vertices	
+	 * @param ReversedVertices		
+	 */
+	UFUNCTION(BlueprintCallable, Category = "EarCutting|Helpers")
+	static void ReverseVertices(UPARAM(ref, DisplayName = "Vertices") TArray<FVector>& Vertices, TArray<FVector>& ReversedVertices);
+
 };
